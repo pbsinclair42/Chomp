@@ -96,7 +96,7 @@ class Board(set):
         ) for y in range(self.y_size - 1, -1, -1))
 
     def __repr__(self):
-        return self.__str__()
+        return '\n'+self.__str__()+'\n'
 
     def __eq__(self, other):
         return str(self) == str(other) or str(self.flipped()) == str(other)
