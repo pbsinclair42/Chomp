@@ -62,6 +62,8 @@ class Chomp:
 
 class Board(set):
     def __init__(self, x_size, y_size):
+        if x_size <= 0 or y_size <= 0:
+            raise ValueError("Board dimensions must be positive")
         self.x_size = x_size
         self.y_size = y_size
         set.__init__(self, {(x, y) for x in range(x_size) for y in range(y_size)})
@@ -86,7 +88,7 @@ class Board(set):
             self.x_size = move_x
 
     def flipped(self):
-        return self.load_from_set(self.y_size, self.x_size, {(y,x) for (x,y) in self})
+        return self.load_from_set(self.y_size, self.x_size, {(y, x) for (x, y) in self})
 
     def __str__(self):
         return '\n'.join(' '.join(
@@ -101,6 +103,10 @@ class Board(set):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __hash__(self):
+        # boards will have equal hashes iff they are in the same state, including rotations
+        return hash(str(self)) + hash(str(self.flipped()))
 
     def __copy__(self):
         return self.load_from_set(self.x_size, self.y_size, self)
