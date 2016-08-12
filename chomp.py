@@ -1,5 +1,6 @@
 from copy import copy
 
+
 class Chomp:
 
     def __init__(self, x_size, y_size):
@@ -10,7 +11,7 @@ class Chomp:
 
     def play_move(self, move_reference):
         move_reference = move_reference.upper()
-        if move_reference=='UNDO':
+        if move_reference == 'UNDO':
             try:
                 old_state = self.history.pop()
                 self.board = old_state['board']
@@ -52,6 +53,12 @@ class Chomp:
     def __repr__(self):
         return str(self)
 
+    def __eq__(self, other):
+        return type(self) == type(other) and self.board == other.board and self.current_player == other.current_player
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class Board(set):
     def __init__(self, x_size, y_size):
@@ -73,7 +80,7 @@ class Board(set):
 
     def flipped(self):
         return '\n'.join(' '.join(
-            ["*" if (x,y) in self else " " for y in range(self.y_size)]
+            ["*" if (x, y) in self else " " for y in range(self.y_size)]
         ) for x in range(self.x_size-1, -1, -1))
 
     def __str__(self):
@@ -85,17 +92,17 @@ class Board(set):
         return self.__str__()
 
     def __eq__(self, other):
-        return str(self)==str(other) or self.flipped()==str(other)
+        return str(self) == str(other) or self.flipped() == str(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __copy__(self):
-        copy = Board(self.x_size, self.y_size)
-        toRemove=[move for move in copy if move not in self]
-        for move in toRemove:
-            copy.remove(move)
-        return copy
+        copied_board = Board(self.x_size, self.y_size)
+        to_remove = [move for move in copied_board if move not in self]
+        for move in to_remove:
+            copied_board.remove(move)
+        return copied_board
 
 
 class Player:
@@ -119,6 +126,9 @@ class Player:
 
     def __eq__(self, other):
         return self.n == other
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 if __name__ == '__main__':
