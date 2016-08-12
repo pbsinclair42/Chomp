@@ -66,6 +66,13 @@ class Board(set):
         self.y_size = y_size
         set.__init__(self, {(x, y) for x in range(x_size) for y in range(y_size)})
 
+    @classmethod
+    def load_from_set(cls, x_size, y_size, board):
+        # Warning: does not validate board
+        new_board = cls(x_size, y_size)
+        super(cls, new_board).__init__(board)
+        return new_board
+
     def play(self, move):
         move_x, move_y = move
         for removed in [(x, y) for x in range(move_x, self.x_size) for y in range(move_y, self.y_size)]:
@@ -79,9 +86,7 @@ class Board(set):
             self.x_size = move_x
 
     def flipped(self):
-        return '\n'.join(' '.join(
-            ["*" if (x, y) in self else " " for y in range(self.y_size)]
-        ) for x in range(self.x_size-1, -1, -1))
+        return self.load_from_set(self.y_size, self.x_size, {(y,x) for (x,y) in self})
 
     def __str__(self):
         return '\n'.join(' '.join(
@@ -92,17 +97,13 @@ class Board(set):
         return self.__str__()
 
     def __eq__(self, other):
-        return str(self) == str(other) or self.flipped() == str(other)
+        return str(self) == str(other) or str(self.flipped()) == str(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __copy__(self):
-        copied_board = Board(self.x_size, self.y_size)
-        to_remove = [move for move in copied_board if move not in self]
-        for move in to_remove:
-            copied_board.remove(move)
-        return copied_board
+        return self.load_from_set(self.x_size, self.y_size, self)
 
 
 class Player:
