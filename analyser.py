@@ -1,5 +1,5 @@
 from chomp import Board
-
+from copy import copy
 
 class Analyser:
 
@@ -18,8 +18,12 @@ class Analyser:
         return set()
 
     def get_all_next_states(self, board):
-        # TODO
-        return set()
+        next_states=set()
+        for move in (board-{(0,0)}):
+            b=copy(board)
+            b.play(move)
+            next_states.add(b)
+        return next_states
 
     def analyse_game(self):
         while True:
