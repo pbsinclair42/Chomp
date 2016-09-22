@@ -38,13 +38,13 @@ class Analyser:
         neighbours = self.get_all_previous_states(state_to_analyse)
         for state in neighbours:
             if state not in self.neighbours_checked:
-                self.to_check_neighbours.update(state)
+                self.to_check_neighbours.add(state)
 
             if state not in self.winning_states and state not in self.losing_states:
                 # if we haven't calculated whether this state is a winning or losing state yet, do so now
                 self.evaluate(state)
 
-        self.neighbours_checked.update(state_to_analyse)
+        self.neighbours_checked.add(state_to_analyse)
 
     def evaluate(self, state):
         # Returns True if this state is a winning state, or False if not
@@ -67,10 +67,10 @@ class Analyser:
         # if any next state is a losing state, this is a winning state
         for next_state in self.get_all_next_states(state):
             if next_state in self.losing_states:
-                self.winning_states.update(state)
+                self.winning_states.add(state)
                 return True
         # if every next state is a winning state, this is a losing state
         if self.get_all_next_states(state).issubset(self.winning_states):
-            self.losing_states.update(state)
+            self.losing_states.add(state)
             return False
         return None
