@@ -16,8 +16,56 @@ class Analyser:
         self.neighbours_checked = set()
 
     def get_all_previous_states(self, board):
-        # TODO
-        return set()
+        last_moves = set()
+        for y in range(self.y_size):
+            x = board.get_max_x(y)+1
+            if x < self.x_size:
+                # (x,y) are all the squares adjacent to the remaining squares
+                # check that (x-1,y) and (x,y-1) are both in the board or out of bounds
+                if (x-1 < 0 or (x-1, y) in board) and (y-1 < 0 or (x, y-1) in board):
+                    last_moves.add((x, y))
+
+        last_states = set()
+
+        for (x, y) in last_moves:
+            # calculate what this move could have removed
+            max_x = board.get_max_x(y-1)
+            max_y = board.get_max_y(x-1)
+            # so move could have removed stuff from (x, y) to (max_x, max_y)
+            x_size = max_x - x + 1
+            y_size = max_y - y + 1
+            # so size of rectangle of removable stuff is x_size by y_size
+            # calculate all possible arrangements of removable points in a rectangle of that size
+            arrangements = self.get_possible_numbers_removed_per_column(x_size, y_size)
+            # for each arrangement, add those points back in to the board, then save that as a possible previous state
+            for arrangement in arrangements:
+                b = copy(board)
+                for row in range(len(arrangement)):
+                    for column in range(arrangement[row]):
+                        b.add((x+row, y+column))
+                last_states.add(b)
+
+        return last_states
+
+    def get_possible_numbers_removed_per_column(self, x, y):
+        # Returns all possible arrangements of squares removed within an x by y grid
+        # Sorry for the ugly.  My recursion skills are rusty.
+        def loop_rec(n, previous_y, result, xns=None):
+            if xns is None:
+                xns = []
+
+            if n >= 1:
+                for xn in range(previous_y, -1, -1):
+                    new_xns = copy(xns)
+                    new_xns.append(xn)
+                    loop_rec(n-1, xn, result, xns=new_xns)
+            else:
+                result.append(xns)
+        to_return = []
+        loop_rec(x, y, to_return)
+        # remove the option where no squares are taken
+        to_return.pop()
+        return to_return
 
     def get_all_next_states(self, board):
         next_states = set()

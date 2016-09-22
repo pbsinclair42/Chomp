@@ -93,6 +93,28 @@ class Board(set):
     def flipped(self):
         return self.load_from_set(self.y_size, self.x_size, {(y, x) for (x, y) in self})
 
+    def get_max_x(self, column):
+        if column < 0:
+            return self.x_size - 1
+        if column >= self.y_size:
+            return -1
+        try:
+            return max([x for (x, y) in self if y == column])
+        # if column is empty
+        except ValueError:
+            return -1
+
+    def get_max_y(self, row):
+        if row < 0:
+            return self.y_size - 1
+        if row >= self.x_size:
+            return -1
+        try:
+            return max([y for (x, y) in self if x == row])
+        # if row is empty
+        except ValueError:
+            return -1
+
     def __str__(self):
         return '\n'.join(' '.join(
             ["*" if (x, y) in self else " " for x in range(self.x_size)]
