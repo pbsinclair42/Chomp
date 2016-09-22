@@ -61,11 +61,18 @@ class Chomp:
 
 
 class Board(set):
-    def __init__(self, x_size, y_size):
+    def __init__(self, x_size, y_size, full_x_size=None, full_y_size=None):
+        if full_y_size is None:
+            full_y_size = y_size
+        if full_x_size is None:
+            full_x_size = x_size
+
         if x_size <= 0 or y_size <= 0:
             raise ValueError("Board dimensions must be positive")
-        self.x_size = x_size
-        self.y_size = y_size
+        if full_x_size < x_size or full_y_size < y_size:
+            raise ValueError("Current size of board must be at most the full size of the board")
+        self.x_size = full_x_size
+        self.y_size = full_y_size
         set.__init__(self, {(x, y) for x in range(x_size) for y in range(y_size)})
 
     @classmethod
@@ -82,10 +89,6 @@ class Board(set):
                 self.remove(removed)
             except KeyError:
                 pass
-        if move_x == 0:
-            self.y_size = move_y
-        if move_y == 0:
-            self.x_size = move_x
 
     def flipped(self):
         return self.load_from_set(self.y_size, self.x_size, {(y, x) for (x, y) in self})
