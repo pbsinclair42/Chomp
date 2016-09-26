@@ -161,27 +161,3 @@ class Player:
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
-
-if __name__ == '__main__':
-    while True:
-        try:
-            x_size, y_size = input("Enter grid size: ").split(',')
-            x_size, y_size = int(x_size), int(y_size)
-            break
-        except Exception as e:
-            pass
-    chomp = Chomp(x_size, y_size)
-    while True:
-        try:
-            print(chomp)
-            this_move = str(input("Enter move: "))
-            print(chomp.play_move(this_move))
-            if chomp.winner is not None:
-                print()
-                print(chomp.current_player() + " wins!")
-                break
-        except Exception as e:
-            print(e.__class__)
-            print(e)
-            pass
