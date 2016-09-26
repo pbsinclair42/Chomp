@@ -67,12 +67,15 @@ class Analyser:
         to_return.pop()
         return to_return
 
-    def get_all_next_states(self, board):
+    def get_all_next_states(self, board, with_move=False):
         next_states = set()
         for move in (board-{(0, 0)}):
             b = copy(board)
             b.play(move)
-            next_states.add(b)
+            if with_move:
+                next_states.add((b,move))
+            else:
+                next_states.add(b)
         return next_states
 
     def analyse_game(self):
@@ -122,4 +125,24 @@ class Analyser:
         if self.get_all_next_states(state).issubset(self.winning_states):
             self.losing_states.add(state)
             return False
+        return None
+
+    def find_winning_move(self, board):
+        # if we already know this is a losing state, give up now
+        if board in self.losing_states:
+            return None
+        # try and find a winning move we can make
+        possible_moves = self.get_all_next_states(board, with_move=True)
+        if len(possible_moves) == 0:
+            return None
+
+        # check if we already know if any possible move would be a winning one
+        for (state, move) in possible_moves:
+            if state in self.losing_states:
+                return move
+        # keep searching until we find a winning move
+        for (state, move) in possible_moves:
+            if not self.evaluate(state):
+                return move
+        # if we've still found nothing, this must be a losing state
         return None
