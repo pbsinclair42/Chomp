@@ -21,7 +21,7 @@ class Chomp:
                 return 'No more moves to undo'
         try:
             move = self.get_coordinates(move_reference)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, IndexError):
             return "I don't understand {}.".format(move_reference)
 
         if not self.is_valid(move):
